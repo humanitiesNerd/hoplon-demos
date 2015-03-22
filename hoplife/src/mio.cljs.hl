@@ -77,6 +77,6 @@
     (for [x (range +size+)]
       (tr (for [y (range +size+)]
             (td :class (cell= {"alive" (alive? alive [x y])}))))))
-   (p (a :href "https://github.com/tailrecursion/hoplon-demos/tree/master/hoplife" "Source Code"))
+   (p (a :href "https://github.com/humanitiesnerd/hoplon-demos/tree/master/hoplife" "Source Code"))
    (p (a :href "index.html" "Original version"))
 ))
