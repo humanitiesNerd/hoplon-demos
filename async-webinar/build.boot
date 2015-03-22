@@ -25,4 +25,4 @@
 (deftask production
   "Build project for production."
   []
-  (comp (watch) (hoplon {:optimizations :advanced}) (dev-server)))
+  (comp (watch) (hoplon {:optimizations :advanced})))
