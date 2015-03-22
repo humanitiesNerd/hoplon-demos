@@ -1,0 +1,82 @@
+(page "mio.html"
+  (:require [tailrecursion.hoplon.reload :refer [reload-all]]))
+
+(reload-all)
+
+(def   +size+     16)
+(def initial-arena
+  (vec
+   (map vec (partition +size+
+                       (repeatedly
+                        (* +size+ +size+)
+                        (fn [] nil))))))
+
+(def initial-position [(rand-int +size+) (rand-int +size+)] )  
+(def   +interval+ 200)
+(def dirs {:right [0 1]
+           :down [1 0]
+           :left [0 -1]
+           :up [-1 0]})
+(def initial-state [initial-arena initial-position])
+(defc  running?   true)
+(defc  alive      initial-state)
+
+
+;; See http://clj-me.cgrand.net/2011/08/19/conways-game-of-life/
+;; Slightly modified to be toroidal
+(defn neighbours [[x y]]
+  (for [dx [-1 0 1] dy (if (zero? dx) [-1 1] [-1 0 1])]
+    [(mod (+ dx x) +size+) (mod (+ dy y) +size+)]))
+
+(defn next-pos [i j dir]
+  (let [[di dj] (dirs dir)
+        i (mod (+ i di) +size+)
+        j (mod (+ j dj) +size+)]
+    [i j]))
+
+(defn strategy [arena [i j]]
+  (let [pos (next-pos i j :right)
+        cell (get-in arena pos)]
+    (if (nil? cell)
+      :right
+      :up)))
+
+(defn step [[arena pos]]
+  (let [dir (strategy arena pos)
+        [i j] pos
+        new-pos (next-pos i j dir)
+        ]
+    (if (nil? (get-in arena new-pos))
+      [(update-in arena new-pos (fn [cell] true)) new-pos]
+      (swap! running? (fn[_] false)))
+  ))
+
+(defn alive? [[arena bot-pos] coords]
+  (not (nil? (get-in arena coords))))
+
+(with-init!
+  (with-interval +interval+
+    (when @running?
+      (swap! alive step))))
+
+(html
+  (head
+   (title "Hoplife")
+   (style :type "text/css"
+     ;;{{
+     table,th,td { margin:0; padding:0; border-spacing:0; }
+     table       { border:1px solid black; }
+     td          { width:16px; height:16px; cursor:pointer; }
+     td.alive    { background-color: black; }
+     ;;}}
+    ))
+  (body
+   (button :click #(swap! running? not) :text (cell= (if running? "Stop" "Start")))
+   (button :click #(swap! alive (fn [cur-alive init-state] (into init-state cur-alive)) initial-state) "Reset")
+   (table
+    (for [x (range +size+)]
+      (tr (for [y (range +size+)]
+            (td :class (cell= {"alive" (alive? alive [x y])}))))))
+   (p (a :href "https://github.com/tailrecursion/hoplon-demos/tree/master/hoplife" "Source Code"))
+   (p (a :href "index.html" "Original version"))
+))

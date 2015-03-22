@@ -29,5 +29,7 @@
   (comp
    (watch)
    #_(hear)
-   (hoplon {:prerender false})
+(hoplon {:pretty-print  true
+             :prerender     false
+             :optimizations :whitespace})
    (dev-server)))

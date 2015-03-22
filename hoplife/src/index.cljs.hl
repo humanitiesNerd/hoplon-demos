@@ -5,7 +5,7 @@
 
 (def   default    #{[2 1] [2 2] [0 1] [1 2] [2 0] [13 11] [12 11] [11 11]})
 (def   +size+     16)
-(def   +interval+ 100)
+(def   +interval+ 200)
 (defc  running?   true)
 (defc  alive      default)
 
@@ -47,4 +47,6 @@
       (tr (for [y (range +size+)]
             (td :click #(swap! alive click [x y])
                 :class (cell= {"alive" (contains? alive [x y])}))))))
-   (p (a :href "https://github.com/tailrecursion/hoplon-demos/tree/master/hoplife" "Source Code"))))
+   (p (a :href "https://github.com/tailrecursion/hoplon-demos/tree/master/hoplife" "Source Code"))
+   (p (a :href "mio.html" "Cristophe's version"))
+))
