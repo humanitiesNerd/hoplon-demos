@@ -1,4 +1,4 @@
-(page "mio.html"
+(page "toroidale.html"
   (:require [tailrecursion.hoplon.reload :refer [reload-all]]))
 
 (reload-all)
@@ -9,7 +9,7 @@
    (map vec (partition +size+
                        (repeatedly
                         (* +size+ +size+)
-                        (fn [] false))))))
+                        (fn [] nil))))))
 
 (def initial-position [(rand-int +size+) (rand-int +size+)] )  
 (def   +interval+ 200)
@@ -30,14 +30,14 @@
 
 (defn next-pos [i j dir]
   (let [[di dj] (dirs dir)
-        i (+ i di) 
-        j (+ j dj) ]
+        i (mod (+ i di) +size+)
+        j (mod (+ j dj) +size+)]
     [i j]))
 
 (defn strategy [arena [i j]]
   (let [pos (next-pos i j :right)
         cell (get-in arena pos)]
-    (if (false? cell)
+    (if (nil? cell)
       :right
       :up)))
 
@@ -46,13 +46,13 @@
         [i j] pos
         new-pos (next-pos i j dir)
         ]
-    (if (false? (get-in arena new-pos))
+    (if (nil? (get-in arena new-pos))
       [(update-in arena new-pos (fn [cell] true)) new-pos]
       (swap! running? (fn[_] false)))
   ))
 
 (defn alive? [[arena bot-pos] coords]
-  (not (false? (get-in arena coords))))
+  (not (nil? (get-in arena coords))))
 
 (with-init!
   (with-interval +interval+
